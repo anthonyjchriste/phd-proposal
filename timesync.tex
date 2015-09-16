@@ -1,0 +1,111 @@
+\section{Sensor Time Synchronization}
+
+\subsection{Introduction}
+Infrasound, oftentimes referred to as low-frequency sound, is characterized by sound that has a frequency lower than 20Hz. The detection of infrasonic data has traditionally been done using expensive stationary sensor arrays. We've developed an inexpensive solution to create a large heterogeneous distributed sensor network using microphones available on certain mobile devices.
+
+Our sensor network communicates with our acquisition and analysis servers over the built-in WiFi of the mobile devices as well as over cellular based data networks. These sensors are distributed globally and display large deviations in upload and download latency. These deviations in latency introduce errors into our timing accuracy.
+
+In-order to perform array processing, our infrasound data files must be within one sample of actual time. In this paper, we examine what it takes to get our timing within one sample of accuracy. We explore the affects of statistically filtering data based on latency symmetry, hardware turnaround time, and overall latency. We show that this is possible and describe the algorithms we use to obtain this level of accuracy. 
+
+[PQ importance here]
+
+\subsection{Background}
+Timing and synchronization is an important area of large scale distributed sensor networks. Distributed sensor networks often have unique requirements which are not found in other time sensitive applications. Restrictions on energy use, computational ability, storage, density of sensors, and the distributed nature makes normal timing solutions unsuitable for large scale distributed sensor networks \cite{sivrikaya_time_2004}.
+
+Further, hardware clocks are imperfect and may drift over time. With an increasing density of nodes in a network brings forth an increasing error of clock drifts on each individual node. Clock synchronization is needed to provide a common time base for all nodes in a sensor network where timing is critical. This is especially important when dealing with sound based data where a common time base is required for tracking the source of a sound and for correlating the same sound event picked up on multiple sensor nodes \cite{elson_time_2001}.
+
+F. Sivrikaya and B. Yener \cite{sivrikaya_time_2004} define clock synchronization is the following way. Real time can be represented by a clock $ C(t)$, but since clocks contain drift and offset factors they're better represented by $C_i(t) = a_it + b_i$ where $a_i(t)$ is the drift and $b_i$ is the absolute offset from actual time. Two clocks within a network can be compared with the equation $ C_1(t) = a_{12} * C_2(t) + b_{12}$ where $a_{12}$ is the relative drift between the two clocks and $b_{12}$ is the relative offset between the two clocks. When the relative drift between two clocks is 1 and the relative offset is 0, its said that those clocks are perfectly synchronized. Two types of synchronization in a global network exist: global synchronization where all clocks in the network share a common time base and local clock synchronization where clocks (usually those closest to each other spatially) share a common time base. For our needs, we implemented a solution using local clock synchronization. This concept of synchronization can further be generalized into three \ subclasses \cite{ganeriwal_timing-sync_2003}. The first and most relaxed class only defines the order in which events are ordered temporally. That is for each event $e_n$ it's only necessary that its known that $e_1$ comes before $e_2$ comes before $e_3$ and so on. The second class of synchronization algorithms requires that nodes don't change their individual clocks, but rather the drift and offset are known for all clocks or a subset of clocks in the network. This allows the true time for any clock in the network to be calculated. The third class of synchronization requires that all clocks be synchronized to a common time base at all times. This is the most difficult class of synchronization to implement in practice.
+
+[GPS]
+
+[NTP]
+
+\subsection{Sensor Message Exchange}
+Our algorithm builds on top of the Tri-Message exchange sensor exchange algorithm proposed by Tian et al \cite{tian_tri-message:_2009}. Tri-Message was designed to provide clock synchronization for high-latency resource-constrained networks such as underwater acoustic networks on long range space communication. The main tenants of the algorithm are only a small number of message exchanges are needed for synchronization, can work in high latency networks, simple methods (computationally) for finding the drift and offset. The Tri-Message algorithm makes two assumptions. First that the drift rate is relatively constant for each node and second that the latencies during a single message exchange remain constant. We found in practice that over our networks, high variations in latency introduced large amounts of error into our calculations. We discuss how we got around this in later sections by applying statistical filtering based on latency.
+
+Each node in our sensor network collects 4096 samples of audio data before transmitting the data to our data acquisition server. Our nodes sample data at 80 Hz which means that each node in our network sends data approximately every 51.2 seconds. While the audio data is being recorded, each node attempts to exchange 10 ``Tri-Message'' exchanges with either it's local timing synchronization server or with the fallback global timing synchronization server if a local server is unavailable. All message exchanges for a local node for a single audio file are then embedded in the header of the audio data so that post-facto synchronization can occur once the data has been collected by the data acquisition server.
+
+A single message exchange between a node $B$ and a synchronization server called the anchor $A$ contains six parts. Three microsecond timestamps represented as the number of microseconds since the epoch (January 1st, 1970 UTC) and three microsecond machine time timestamps which represent the internal crystal oscillator of a node since the device has been powered on. In certain circumstances, the device id is also transmitted to the anchor time server. The message exchange takes place as described in figure [fix add figure] with each $A$ coefficient representing an anchor epoch timestamp and each $B$ coefficient representing a node machine time timestamp. 
+
+
+
+
+
+%\begin{center}
+%\begin{minipage}{4.8154in}
+%Figure {\refstepcounter{Figure}\theFigure\label{seq:refFigure0}}: Redvox Synchronization Process
+% [Warning: Image ignored] % Unhandled or unsupported graphics:
+%\includegraphics[width=4.8154in,height=3.5945in]{TimeSyncPaper-img001.png}
+%\end{minipage}
+%\end{center}
+
+Notable differences from Tian et al. Tri-Message exchange include an initial $B0$ from the node which initializes the synchronization process on the anchor server as well as a $B4$ message from the node which includes the device id of the node. The device id is useful when the timing coefficients are stored on the anchor server rather than the device nodes. The device id allows the anchor server to identify which node the anchor server is performing synchronization with.
+
+Once a message exchange has occurred, it's possible to correct the nodes internal time by finding the drift $ \beta$ and offset $ \alpha$ with the following equations %\label{ref:RNDzisfqL7u4n}[4]:
+
+\ \ $ \beta = (B3 - B1) / (A3 - A1)$\ \ 
+
+\ \ $ \alpha = (B1 + B2) / 2 - (A1 + A2) * \beta / 2$\ \ 
+
+\subsection{Constraints on Latency}
+Due to the fact that latencies have a high variance in practice, we've implemented a statistical solution to estimate the true time $ A0$ from a series of message exchanges. Since each audio file contains 4096 samples, it's possible to find a single audio file whose timing coefficients meet our statistical criteria and then correct the rest of the audio files adjacent to it using a known sample rate and the number of samplers per audio file. This allows us to essential ``lock-on'' to a good file and use the timing information for that file to perform a post-facto timing synchronization on all files adjacent to that ``locked-on'' file.
+
+The statistical values that we are looking for are all variations on the latency. We look at overall latency, symmetric latency, and turn-around time on nodes and anchors.
+
+The latency can be estimated with two different sets of timing coefficients. We can estimate the latency by taking the round-trip time of $A$ and subtracting the turn-around time of $B$ or by taking the round-trip time of $B$ and subtracting the turn-around time of $A$. The two latency equations can be defined as:
+
+\ \ $d1 = ((A2-A1) - (B2-B1)) / 2$
+\ \ 
+
+\ \ $d2 = ((B3-B2) - (A3-A2)) / 2$\ \ 
+
+Turn-around time is defined as the time it takes for a device to receive a timestamp, generated a new timestamp, and send the new timestamp back to the sender. This can be defined as:
+
+\ \ $ T_A = A3 - A2$\ \
+
+\ \ $ T_B = B2 - B1$\ \ 
+
+Symmetry looks at the latency from the anchor server to the node and from the node to the server. The Tri-Message algorithm requires that inbound latency be similar to outbound latency. We can test the symmetry of the latency with the following equations:
+
+\ \ $ S = (B3 - B1) - (A3 - A1)$\ \ 
+
+To find the actual time for a given file, we first filter our files using the timing coefficients and the latency equations above. We perform filtering in an order that will remove the most noise first and then move on to filters that will disqualify a smaller number of message exchanges. Our filtering process using the above filters in the following order: node turn-around ($ T_B$), anchor turn-around ($ T_A$), symmetry ($ S$), and finally overall latencies ($ d1, d2$). We filter message exchanges using these latencies with the following values.
+
+%\begin{center}
+%\tablefirsthead{\hline
+%\centering Name &
+%\centering\arraybslash Value\\}
+%\tablehead{\hline
+%\centering Name &
+%\centering\arraybslash Value\\}
+%\tabletail{}
+%\tablelasttail{}
+%\begin{supertabular}{|m{3.38376in}|m{3.38376in}|}
+%\hline
+%Node turn-around ($ T_B$) &
+%0.5\\\hline
+%Anchor turn-around ($ T_A$) &
+%0.1\\\hline
+%Symmetry ($ S$) &
+%2.5\\\hline
+%Overall latencies ($ d1, d2$) &
+%100\\\hline
+%\end{supertabular}
+%\end{center}
+
+
+Once we've filtered out the good message exchanges, we can find the actual time $ A0$ using the following equations:
+
+\ \ $ A01_i = A1_i + d1_i - (B1_i-B0_i)$\ \ 
+
+\ \ $ A03_i = A3_i + d3_i - (B3_i - B0_i)$\ \ 
+
+\ \ $ A0_{mean} = \sum (A01_i + A02_i) / (2 * numMessages)$\ \
+
+
+\subsection[Experimentally Finding Latency Filters Values ]{Experimentally Finding Latency Filters Values }
+
+\subsection{Conclusion}
+
+\subsection{Figures}
+

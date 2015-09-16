@@ -1,0 +1,32 @@
+\section{Berkeley Data Analytics Stack}
+\subsection{Apache Spark}
+Spark \cite{zaharia2010spark} is a general purpose computation engine for large-scale data analytics. Spark runs on top of Hadoop and makes use of Hadoop's distributed file system. Spark is implemented in Scala and provides public APIs for Python, Java, and Scala. The framework also provides an interactive interpreter through Python and Scala. Spark replaces Hadoop's MapReduce engine with highly efficient in-memory computations. Spark supports applications with similar scalability and fault tolerance requirements as MapReduce. Spark claims speed increases of up to 100 times that of Hadoop. Several Spark components play an important role within the Berkeley Data Analytics Stack, namely the basic computation engine as well as the Spark's streaming framework. Since Spark is built on top of Mesos, a cluster operating system, Spark can share data and work with other distributed frameworks such as Hadoop or MPI.
+
+Apache Spark focuses on two areas of computation that MapReduce and its variants does not provide. Iterative computations such as those found in machine learning algorithms and interactive analytics. Apache Spark differs from MapReduce by providing the ability to store and cache large data sets in main memory allowing future computations to easily make use of past computations. By chaining and pipelining processes together, Apache Spark achieves high performance on large commodity clusters.
+
+The Spark programming model revolves around writing a driver program to implement high-level logic and to launch parallel operations. Data is defined in terms of \textit{resilient distributed datasets} (RDD) and then these datasets are transformed in parallel by passing functions over the data sets. The scheduling of these computations is handled at the framework level by Spark.
+
+RDDs represent an abstract collection of lazy objects which are read-only and partitioned across multiple compute units. RDDs contain fault tolerance mechanisms such that if any RDD partition is lost, it can be recomputed from the Spark compute history. RDDs can be cached, shared, and accessed from any part of the framework during computation. Being an abstraction, RDDs can be created from many data sources including files, Scala and Java collections, or through the transformation of other RDDs.
+
+RDDs can be transformed in parallel using operations such as \textit{map}, \textit{reduce}, \textit{filter}, \textit{collect}, and \textit{foreach}. Map takes a user defined function and transforms each data item using that function. Reduce applies a function over associative data using the previous function's result as an input into the next computation. Collect collects the results from each parallel operation and aggregates those results within the driver program. The foreach parallel action is similar to \textit{map} in that it maps a function over the data, however this function is mainly used to for the generation of side effects (as opposed to purely functional view) from the function.
+
+Apache Spark supports two types of shared variables which can be accessed from any thread. Broadcast variables which are read only and the preferred approach will disseminating information across workers and accumulator variables which can be used for adding associative values across workers.
+
+\subsection{Apache Spark Streaming}
+Spark Streaming \cite{zaharia2012discretized} is a project from Berkeley's AmpLab which support real-time parallel processing of streams of data. Spark Streaming aims to improve upon previous batch computation frameworks in three important ways. Fault tolerance and proper replication of data across a cluster, consistency of data across multiple workers in a cluster (do they see the same data?), and unification of batch processing (i.e. the ability to perform operations using real-time data and historical data at the same time). Spark Streaming is built on the principals of Spark in that it's main abstraction of data is an RDD. Spark Streaming solves the above issues by adding the concept of discretized streams (D-Streams) which are a series of RDDs that can be acted on in parallel using similar operations as Apache Spark (map, reduce, filter, etc).
+
+D-Streams are used to compute batch clusters of data over small time intervals. Data received this way is distributed and stored across workers on the cluster. Once enough data has been received for a given time-interval, batch computations are applied to the data. D-Streams are operated on using sliding window algorithms and multiple windows may be used concurrently to analyze different time intervals. Artifacts and intermediate data can be computed this way and stored back to the cluster as RDDs. D-Streams also support incremental aggregation (such as computing running statistics) and time-skewed joins such that previously computed RDDs in the stream can be used with current data. This effectively allows to different time intervals to be inspected.
+
+D-Streams are fault tolerant and use a parallel recovery as an approach to recreating lost partitions in Apache Spark. They track the lineage of a stream, and if any part of the stream is lost, it can be rebuilt using its lineage.
+
+\subsection{Spark SQL}
+Spark SQL was originally developed as Shark SQL \cite{shark} and later merged into the Spark project as a core library. Spark SQL was designed to support both SQL and complex analytics efficiently. Spark SQL performs in-memory computations using the same RDD data structures used in Spark and Spark Streaming. The ability to use RDDs allows Spark SQL to perform complex analytics including machine learning algorithms and graph processing. The use of RDDs also facilitates the same fault tolerance guaranties as other data partitioned across the cluster. 
+
+Spark SQL adds three extensions to Spark to provide for more efficient SQL queries. 
+
+\subsection{GraphX}
+GraphX \cite{xin2013graphx}
+
+\subsection{MLBase}
+
+MLBase \cite{kraska2013mlbase}

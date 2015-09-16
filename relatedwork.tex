@@ -1,0 +1,47 @@
+\chapter{Related Work}
+\section{Dealing with big-data}
+The PCAST report identifies several technologies that have proven use when analyzing big-data sets. These technologies can be broken up into data processing frameworks and distributed cloud providers.
+
+\subsection{Distributed Cloud Services}
+Distributed cloud providers offer scalable solutions for provisioning large amounts of processing power, network bandwidth, and storage solutions (both volatile and non-volatile). Cloud providers will often replicate data across multiple geographically distributed physical machines. Access of data stored on these providers will then use the closest server to their access point. By replicating the data across multiple servers, cloud services are also able to provide a large amount of redundancy and uptime for critical applications. The PCAST report mentions several public cloud providers including Amazon Web Services, Google Cloud Platform, Microsoft Azure, and Rackspace.
+
+\subsection{Data Processing Frameworks}
+Cloud services only provide half of the equation for performing big-data analytics. There are a multitude of frameworks that provide APIs and algorithms for performing large scale data analytics. These frameworks are able to perform calculations and store data across hundreds if not thousands of machines as if they were a single machine. Some of the most popular solutions include Google's MapReduce (where Hadoop \cite{hadoop} is the standard open source implementation), not Structured Query Language (noSQL) databases, Apache Accumulo \cite{accumulo}, Berkeley Data Analytics Stack \cite{bdas}, Google's Dremel \cite{dremel}, MPI \cite{mpi} (and OpenMPI \cite{openmpi}), OpenMP \cite{openmp}, Pregel \cite{malewicz_pregel:_2010}, Cloudscale \cite{shen_cloudscale}, and Apache Spark \cite{spark}.
+
+\subsubsection{MapReduce / Hadoop}
+Google's MapReduce is a programming model for creating and processing large data sets. The MapReduce framework can access data from both file systems and structured data sources such as local and distributed databases. This type of framework works best with embarrassingly parallel data. That is, data where local calculations can be made without knowing the state of the entire system.
+
+First, a map function is applied to local data on each machine within the distributed cluster. This map function transforms the local data into a partial result. Finally, the reduce algorithm takes the partial results from each local node to produce a final result.
+
+An open source version of MapReduce was released to the Apache Software foundation as Hadoop. Hadoop applications can be ran on many of the distributed cloud services mentioned above.
+
+\subsubsection{Berkeley Data Analytics Stack}
+The Berkeley Data Analytics Stack is a collection of open source components built by Berkeley's AMPLab for the purpose of "making sense of Big Data". This framework contains many pieces for working with big-data including:
+
+\begin{enumerate}
+  \item{Mesos - Cluster resource manager}
+  \item{Hadoop Distributed File System (HDFS)}
+  \item{Hadoop Map Reduce}
+  \item{Tachyon - Distributed Memory Centric Storage System}
+  \item{Spark - Memory optimized execution engine}
+  \item{Spark Streaming - Spark framework for streaming applications}
+  \item{GraphX - Graph network computations}
+  \item{MLbase - Machine learning engine}
+  \item{Shark - SQL API}
+  \item{BlinkDB - MySQL with bounded errors and response times}
+  \item{Hive - Distributed DB engine}
+  \item{Storm - Distributed and Real-Time Computation Engine}
+  \item{MPI - Message Passing Interface for low level distributed computing}
+\end{enumerate}
+
+\subsubsection{Cloudscale}
+Cloudscale is a service that attempts to make cloud systems which are scalable by design. This framework allows programmers to program without considering scalability and Cloudscale handles the details of resource management and auto-scaling as the service demands.
+
+Cloudscale provides remoting in which applications look like regular applications to the programmer, but to the Cloudscale network, applications are able to remotely communicate with each other behind the scenes for efficient data sharing. Cloudscale also provides virtual machine management as well as application monitoring.
+Finally, Cloudscale provides easy deployment of applications to the cloud.
+
+\subsubsection{MPI and OpenMP}
+MPI and OpenMP are both low level messaging APIs that allow processes and threads to communicate with each other with ease. In a sense, these APIs are similar to MapReduce in that local processes compute a local result and then use message passing to collect local results and find a global result. MPI tends to provide lower level access where data must be strictly managed. OpenMP provides programming language constructs which attempt to automatically parallelize computations over multiple machines or multiple devices. These APIs often form the backbone of other big-data processing frameworks.
+
+\subsubsection{NoSQL, Apache Accumulo}
+[todo]

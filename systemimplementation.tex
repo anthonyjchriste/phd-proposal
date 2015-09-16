@@ -1,0 +1,22 @@
+\chapter{System Implementation}
+\section{Software Architecture}
+We make heavy use of BDAS components to analyze our data. Data from sensors are streamed to our server and aggregated using Spark Streaming. Data is streamed to Spark Streaming where it is transformed into a discrete stream of Spark  RDD data structures. Real-time processing acts on these RDDs and performs one of three actions. 
+
+\subsection{Apache Spark Streaming}
+First, data is partitioned and cached in-memory. We use an aging algorithm to get a different granularity and density of data depending on how long it's been sitting in-memory. For example, data from the last $N$ minutes may be stored with a high density of detail and information. Data from the last $M$ hours will be stored in a more compact format at the cost of losing detail. Data from the past $P$ days could be stored with the lowest information density. These measurements will remain in memory so that the data can be analyzed at various time scales.
+
+Second, real-time processing actively seeks out transients and deviations from the steady state of the signal. Another way of looking at it is that the real-time processing will filter out uninteresting data when the signal remains at steady state. When a deviation is encountered, the system can communicate with other devices for smart triggering, perform additional analysis, and store interesting information to the SQL database. 
+
+Third, the real-time processing unit is responsible for storing "interesting" data at an appropriate level of detail on the SQL database. Some of this data may be artifacts ready ready for consumption and some of the data will be detailed raw data for further future analysis using Apache Spark at a future date.
+
+\subsection{Apache Spark}
+Once data has been pre-processed by Streaming Spark, we can schedule Apache Spark jobs to run longer term analysis on the stored in the aged temporal in-memory data. Apache Spark also provides interpreters in Java and Python that allow us to dynamically query the data when we are iterating 
+
+\subsection{Adhoc Mobile Arrays}
+We use AmpLab's GraphX framework for performing parallel graph computations on our mobile and stationary sensors.
+
+\subsection{Front End}
+
+
+\section{Data Flow}
+

@@ -1,0 +1,61 @@
+\subsection{What is Big Data?}
+Today's technologically driven society has given way to the "Internet of Things", a world wide network of sensors all taking measurements, analyzing and creating massive amounts of data. These massive data sets are collectively referred to as "Big Data".
+
+The White House's report on big-data describes three key points that differentiates big-data from "small data": volume, variety, and velocity.
+
+The volume of data being produced has far surpassed anything produced in history. The internet has allowed for the ubiquitous interconnection of devices which allows almost anything to communicate over a network.  It's estimated that in 2013 4 zettabytes of data were generated world wide \cite{kpcb}. This is up from 295 exabytes in 2007 \cite{hilbert_worlds_2011}, a $1,256\%$ increase data in just 6 years. In 2010, Google produced the same amount of content (most of it user generated) in two days as was produced from the dawn of time up until 2003 \cite{schmidt2010}.
+
+The variety of data being produced is also increasing. Not only are humans sharing more data about themselves (photos, videos, etc), but metadata is also being generated from that data. Furthermore, the Internet of Things provides for sensors that can measure almost anything imaginable. The types of data being transmitted are very diverse.
+
+The variety of data can be attributed to how data is produced. The PCAST paper describes data as either born digital or born analog. Born digital data is a product created specifically for digital consumption, i.e. e-mail, figures, or mouse clicks. Born analog data is often collected from sensors including microphones, barometers and thermostats among others. Born analog data is digitized and then acted upon.
+
+\subsection{Big Data Context}
+Our research involves the aggregation of distributed time series data and the detection of deviations from the steady state of sensor signals. Our sensors are either mobile or stationary. In certain configurations, such as the collection of infrasound data using an array of microphones, more information can be gathered when sensors are near each other and physically arranged in a certain situation. Using graph processing algorithms, we show that it is possible to create adhoc mobile arrays.
+
+Our data is time and location sensitive. Our calculations depend on the physical location of sensors (namely latitude and longitude) as well as accurate timestamps to synchronize data streams from multiple sensors.
+
+\subsubsection{Infasound Data}
+
+Infrasound is sound which is less than 20 Hz in frequency. Infrasound can be detected with both microphones and barometers. We've developed a next generation sensor network for the collection of infrasonic data. These sensors are distributed, mobile, and make use of constant network connections either over a cellular radio network or over WiFi. Each sensor collects and computes several metrics which when combined with other sensor metrics can be used to compute the location, energy yield, and time of infrasonic events.
+
+Infrasound is generated from many sources, but the particular events we are interested in are large atmospheric events. These can be caused by large explosions, volcanic eruptions and volcanic gas venting, sonic booms, large storms, debris entering the atmosphere, tsunamis, nuclear weapons, etc. Many of these events are time sensitive and early warnings and quick classification could potentially save lives.'
+
+Traditional infrasound arrays utilize a set of stationary microphones configured to "listen" to certain frequency bands. An array is able to determine direction and location of infrasonic events by measuring the differences of when events were picks up on each microphone. 
+
+We show that it's possible to use graph algorithms to create ad-hoc arrays from roaming dense sensor networks. By collecting all the data from each device, we can even perform this analysis ex post facto at different frequency bands.
+
+We perform quality control on our data by utilizing decision trees. [This needs some expanding still].
+
+We utilize passive and active training to create templates of waveform transients in-order to classify transients in near real-time.
+
+[This section needs a little updating]
+For microphone data, each infrasound sensor records one minutes worth of audio data, decimates the audio data by 1000, and then speeds it up a factor of 60. This audio data is stored in a canonical wave file along with metadata associated with the sensor. Other than the normal wave header, the metadata we store is the api version, the idForVendor field from iOS, latitude, longitude, altitude, speed, horizontal accuracy, vertical accuracy, time of solution, and time of last sample.
+
+Each microphone reading we receive contains approximately 9,700 bytes of data once a minute. We can estimate the data we would receive at scale using the following chart.
+
+\begin{tabular}{| c | l |}\hline
+Sensors & GB/day \\\hline
+1 & 0.013008714 \\\hline
+10 & 0.13008714 \\\hline
+100 & 1.3008714 \\\hline
+1000 & 13.008714 \\\hline
+10000 & 130.08714 \\\hline
+100000 & 1300.8713 \\\hline
+1000000 & 13008.714 \\\hline
+\end{tabular}
+
+\subsubsection{Power Quality Data}
+We measure consumer grade power quality (PQ) data using an array of devices distributed across Hawaii. In the United States, the standard voltage of electricity is is 120V and the standard frequency is 60 Hz. Other countries have other power standards. Deviations from these standards are considered PQ issues. Common issues in power quality are voltage swells, sags, and frequency fluctuations. By analyzing the raw waveform of electricity, it's possible to detect and classify these PQ issues. 
+
+PQ may have large impacts on the lifetimes of electronic devices. Further, the high density of photovoltaics (PV) interacting with a power grid can cause unknown effects. By observing PQ events across the grid in a distributed and time sensitive fashion, we show it is be possible to track points of failure and to provide possible PQ predictions and modeling.
+
+Having quick access to these metrics would be an invaluable resource for power companies, city governments, manufactures, and households.
+
+The high sample rate necessary for detecting short lived transients in power systems requires a large amount of data to be sent across the network. Intelligent triggering can help alleviate some of the congestion, but a new framework is needed in-order to handle the large amount of data.
+
+We utilize machine learning to classify PQ events and decision trees to assign quality metrics to the data received from our distributed sensor network. We use a real-time compute framework such as Apache Spark Streaming to classify local and distributed events in real-time.
+
+Graph algorithms allow us to localize events and define ad-hoc PQ neighboorhoods.
+
+\subsubsection{Any Data}
+Although this thesis focuses on two sources of data that I've collected, it's meant to be an abstract framework that can work with any source of heterogeneous temporally and geographically distributed data. We provide machine learning for transient analysis and quality control. We use graph algorithms for geographic feature extraction. All backed by a large cluster compute framework which can handle the demanding needs of tomorrow's IoT and Big Data explosion.

@@ -1,0 +1,32 @@
+\chapter{Introduction}
+\section{The Big Data Problem}
+Data is being produced at an unprecedented rate worldwide. Not only is it servers, computers, and mobile phones producing data, but also an impressive amount of heterogeneous sensors and systems that keep our infrastructure running, the Internet of Things (IoT). In 2014 Gartner estimated over 3.7 billion internet connected devices were in use and that by 2020 over 25 billion internet connected devices will be use. 
+
+In January 2014, President Obama asked his administration to perform a 90 day study on big-data and its impact on education, national security, government, private industry, and privacy \cite{wh_web:00}.
+
+The result of this study yielded two reports. The first report, \textit{Big-Data: Seizing Opportunities, Preserving Values} \cite{wh_big_data}, was prepared by the President's Executive Office and focuses on big-data policy and how big-data changes the relationships between government, citizens, education, and the private sector.
+
+The second study by The President's Council of Advisors on Science and Technology (PCAST),  \textit{Big-Data and Privacy: A Technological Perspective} \cite{pcast2014}, was prepared to complement the first study and examines the technological and privacy implications of big-data.
+
+Many types of physical phenomena can be modeled as waveforms and digitized by sensor networks. For example, networks of seismometers monitor vibrations in the Earth's crust. Weather stations are constantly taking atmospheric measurements. Vast networks of ocean buoys are measuring wave height. Power quality sensors are measuring power quality inside peoples' households. Infrasound sensors are monitoring volcanoes, large atmospheric events, and other large explosions. Our households, vehicles, and lives are full of sensors. Many of these sensors require near-real-time responses. All of these sensors are distributed in both time and location. The wealth of information is incredible and we're only now starting to engineer the tools needed to digest it.
+
+Physical phenomena modeled as waveforms presents us with three challenges. The tools required to handle a high volume of data, the ability to perform real-time quality analysis and filtering, and the ability to automatically classify transient events found in the waveform both locally and distributed over many sensors.
+
+\section{Framework}
+I present a framework for the real-time classification and analysis of transients in geographically and temporally distributed sensor data. We utilized machine learning, graph, and big data algorithms in order to meet the complex criteria of multi-variant heterogeneous data classification. Further, we utilize cloud architecture and big-data compute frameworks as a means to digest large amounts of heterogeneous data without needing to setup our own hardware.
+
+By utilizing actor systems we are able to maintain and scale to thousands of streaming sensor connections. Actors also allow us to pipeline our initial acquisition process for quality control and binary decoding based on message type and API version of our data. Certain actor models allow us to pass directly into a computer framework of our choice, i.e. Akka actors can pipe data directly into Apache Spark.
+
+By utilizing a compute framework similar to Hadoop or Apache Spark, we are able to injest data and perform batch waveform analysis over time scales of our choosing. Certain frameworks such as Apache Spark Streaming providing sliding window processing on top of real-time streaming data. 
+
+My framework provides and integrates many tools for performing waveform analysis on top of a cluster of computers. We utilize Apache Spark's core libraries to perform machine learning and graph processing. We utilize the Python libraries numpy, SciPy, obspy, and Matplotlib to build on top of open source libraries that already provide digital signal processing routines. Many of these open source libraries are also compatible with large compute frameworks such as Apache Spark.
+
+We provide an interface for exploring and performing ad-hoc data analysis on real-time and batch waveform data. We allow users to enter parameters for their specific data set, and then provide the tools needed to access raw data as well as data products for their specific use case.
+
+Our framework is built on top of a cloud architecture utilizing Amazon Web Services (AWS). AWS provides scalability by making it easy to duplicate and increase resources on the fly. We show that by seperating our framework components into seperate instances of AWS servers, we are able to scale coponents on demand and individually.
+
+My framework takes steps to maintain users' privacy and ensure anonymity.
+
+Finally, we show that these techniques provide a measurable increase in performance over traditional methods of sensor data collection and analysis by feeding the framework with sensor data from temporally and geographically distributed power quality sensors and infrasound sensors. 
+
+This thesis builds upon the guidelines and ideas laid out by the White House big-data papers. Specifically, we place a heavy emphasis on privacy. 
